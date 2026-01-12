@@ -1,0 +1,165 @@
+@startuml class_diagram
+
+title Smart Light IoT System - Class Diagram
+
+skinparam class {
+    BackgroundColor #f8fafc
+    BorderColor #334155
+    ArrowColor #4361ee
+}
+
+skinparam stereotypeBackgroundColor #e0e7ff
+
+' ==================== ENUMS ====================
+enum UserRole {
+    ADMIN
+    USER
+}
+
+' ==================== MODELS / ENTITIES ====================
+class User <<Entity>> {
+    - id: Integer <<PK>>
+    - username: String <<Unique>>
+    - password: String
+    - role: UserRole
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    --
+    + login(username, password): Token
+    + register(username, password): User
+    + getProfile(): User
+}
+
+class SystemConfig <<Entity>> {
+    - id: Integer <<PK>>
+    - threshold: Integer = 2000
+    - isManual: Boolean = false
+    - manualState: Boolean = false
+    - updatedBy: Integer <<FK>>
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    --
+    + getConfig(): SystemConfig
+    + updateConfig(data): SystemConfig
+}
+
+class SensorLog <<Entity>> {
+    - id: Integer <<PK>>
+    - lightValue: Integer
+    - lampStatus: Boolean
+    - configId: Integer <<FK>>
+    - createdAt: DateTime
+    --
+    + createLog(data): SensorLog
+    + getLogs(page, limit): List~SensorLog~
+    + getStatistics(period): Statistics
+}
+
+' ==================== CONTROLLERS ====================
+class AuthController <<Controller>> {
+    + login(req, res): Response
+    + register(req, res): Response
+    + signup(req, res): Response
+    + getProfile(req, res): Response
+}
+
+class WebController <<Controller>> {
+    + getDashboardStatus(req, res): Response
+    + getSensorLogs(req, res): Response
+    + updateConfig(req, res): Response
+    + getStatistics(req, res): Response
+}
+
+class DeviceController <<Controller>> {
+    + getConfig(req, res): Response
+    + postSensorLog(req, res): Response
+}
+
+class UserController <<Controller>> {
+    + getAllUsers(req, res): Response
+    + addUser(req, res): Response
+    + updateUser(req, res): Response
+    + deleteUser(req, res): Response
+}
+
+' ==================== SERVICES ====================
+class APIService <<Service>> {
+    - baseURL: String
+    - token: String
+    --
+    + get(endpoint): Promise
+    + post(endpoint, data): Promise
+    + patch(endpoint, data): Promise
+    + delete(endpoint): Promise
+}
+
+' ==================== IOT DEVICE ====================
+class ESP32Device <<Hardware>> {
+    - ssid: String
+    - password: String
+    - serverUrl: String
+    - threshold: Integer
+    - isManual: Boolean
+    - manualState: Boolean
+    - currentLampStatus: Boolean
+    --
+    + setup(): void
+    + loop(): void
+    + fetchConfig(): void
+    + postSensorData(): void
+    + readLDR(): Integer
+    + controlLED(status): void
+}
+
+' ==================== RELATIONSHIPS ====================
+
+' Model Relationships
+User "1" -- "0..*" SystemConfig : updates >
+SystemConfig "1" -- "0..*" SensorLog : generates >
+
+' Controller to Model
+AuthController ..> User : uses
+WebController ..> SystemConfig : uses
+WebController ..> SensorLog : uses
+DeviceController ..> SystemConfig : uses
+DeviceController ..> SensorLog : uses
+UserController ..> User : uses
+
+' Frontend to API
+APIService ..> AuthController : calls
+APIService ..> WebController : calls
+APIService ..> UserController : calls
+
+' Device to Backend
+ESP32Device ..> DeviceController : HTTP requests
+
+' ==================== NOTES ====================
+note top of User
+  Roles:
+  - admin: Full access (CRUD User)
+  - user: Read-only dashboard
+end note
+
+note right of ESP32Device
+  Hardware Components:
+  - LDR Sensor (GPIO 34)
+  - LED/Relay (GPIO 2)
+  - WiFi Module
+end note
+
+note bottom of SensorLog
+  Statistics include:
+  - lampOnCount / lampOffCount
+  - avgLightValue
+  - minLightValue / maxLightValue
+  - chartData (time-series)
+end note
+
+note right of UserController
+  Admin CRUD Operations:
+  - Add new user
+  - Update existing user
+  - Delete user
+end note
+
+@enduml
