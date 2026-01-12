@@ -1,0 +1,68 @@
+@startuml
+title Activity Diagram Admin - Update Threshold
+
+|Admin|
+start
+
+:Login ke Sistem;
+
+|System|
+:Validasi Kredensial Admin;
+
+|Database|
+:Cek Data Admin;
+
+|System|
+if (Valid?) then (Ya)
+    |Admin|
+    :Akses Menu Config;
+    
+    |System|
+    :Request Konfigurasi Saat Ini;
+    
+    |Database|
+    :Query system_config;
+    
+    |System|
+    :Tampilkan Nilai Threshold;
+    
+    |Admin|
+    :Melihat Nilai Threshold;
+    :Input Nilai Threshold Baru;
+    
+    |System|
+    :Validasi Input;
+    
+    if (Input Valid?) then (Ya)
+        |Database|
+        :Update Threshold di system_config;
+        
+        |System|
+        :Tampilkan Sukses;
+        
+        |Admin|
+        :Melihat Konfirmasi;
+        
+    else (Tidak)
+        |System|
+        :Tampilkan Error Validasi;
+        
+        |Admin|
+        :Melihat Pesan Error;
+    endif
+    
+    |Admin|
+    :Logout;
+    
+    |System|
+    :Hapus Session;
+    
+else (Tidak)
+    |System|
+    :Tampilkan Error Login;
+    :Redirect ke Login;
+endif
+
+stop
+
+@enduml
