@@ -1,0 +1,94 @@
+@startuml
+
+title Smart Light IoT System - Use Case Diagram
+
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+    BackgroundColor #f8fafc
+    BorderColor #334155
+    ArrowColor #4361ee
+}
+
+actor "Admin" as admin #lightgreen
+actor "User" as user #lightblue
+actor "ESP32 Device" as device #lightyellow
+
+rectangle "Smart Light IoT System" {
+  
+  ' Auth - top
+  usecase "Register" as UC_Register
+  usecase "Logout" as UC_Logout
+  
+  ' Admin User Management
+  usecase "Add New User" as UC_AddUser
+  usecase "Update User" as UC_UpdateUser
+  usecase "Delete User" as UC_DeleteUser
+  
+  ' Admin Lamp Control
+  usecase "Set Light Threshold" as UC_Threshold
+  usecase "Toggle Operating Mode" as UC_Mode
+  usecase "Manual Lamp Control" as UC_ManualLamp
+  
+  ' Admin View
+  usecase "View All Users" as UC_ViewUsers
+  
+  ' Shared (Admin + User)
+  usecase "View Dashboard" as UC_Dashboard
+  usecase "View Statistics" as UC_Stats
+  usecase "View Sensor Logs" as UC_Logs
+  
+  ' Login center
+  usecase "Login" as UC_Login
+  usecase "View Real-time Chart" as UC_Chart
+  
+  ' Device
+  usecase "Fetch Configuration" as UC_FetchConfig
+  usecase "Send Sensor Data" as UC_SendData
+  usecase "Control Lamp" as UC_ControlLamp
+}
+
+' Admin connections - ordered
+admin --> UC_AddUser
+admin --> UC_UpdateUser
+admin --> UC_DeleteUser
+admin --> UC_Threshold
+admin --> UC_Mode
+admin --> UC_ManualLamp
+admin --> UC_ViewUsers
+admin --> UC_Dashboard
+admin --> UC_Stats
+admin --> UC_Logs
+
+' User connections
+user --> UC_Dashboard
+user --> UC_Stats
+user --> UC_Logs
+
+' Device connections
+device --> UC_FetchConfig
+device --> UC_SendData
+
+' Extend relationships
+UC_Register ..> UC_Login : <<extend>>
+UC_Logout ..> UC_Login : <<extend>>
+
+' Include relationships to Login - ordered
+UC_AddUser ..> UC_Login : <<include>>
+UC_UpdateUser ..> UC_Login : <<include>>
+UC_DeleteUser ..> UC_Login : <<include>>
+UC_Threshold ..> UC_Login : <<include>>
+UC_Mode ..> UC_Login : <<include>>
+UC_ManualLamp ..> UC_Login : <<include>>
+UC_ViewUsers ..> UC_Login : <<include>>
+UC_Dashboard ..> UC_Login : <<include>>
+UC_Stats ..> UC_Login : <<include>>
+UC_Logs ..> UC_Login : <<include>>
+
+' Other includes
+UC_Stats ..> UC_Chart : <<include>>
+UC_FetchConfig ..> UC_ControlLamp : <<include>>
+
+@enduml
