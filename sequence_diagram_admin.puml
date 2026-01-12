@@ -1,0 +1,134 @@
+@startuml sequence_diagram
+
+title Smart Light IoT System - Sequence Diagram
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceParticipant underline
+skinparam responseMessageBelowArrow true
+
+' ==================== PARTICIPANTS ====================
+actor "Admin" as admin #lightgreen
+participant "Frontend\n(Next.js)" as fe #lightyellow
+participant "Backend\n(Express.js)" as be #lightblue
+database "PostgreSQL\nDatabase" as db #white
+participant "ESP32\nDevice" as esp #orange
+
+' ==================== AUTHENTICATION FLOW ====================
+== Authentication ==
+admin -> fe : Open Login Page
+fe -> be : POST /api/auth/login
+be -> db : SELECT user WHERE username
+db --> be : User data
+be --> fe : JWT Token
+fe --> admin : Redirect to Dashboard
+
+' ==================== DEVICE DATA FLOW ====================
+== Device Polling (Every 5s) ==
+esp -> be : GET /api/device/config
+be -> db : SELECT system_config
+db --> be : {threshold, is_manual, manual_state}
+be --> esp : Configuration JSON
+
+esp -> esp : Read LDR Sensor
+esp -> esp : Apply Logic\n(Auto/Manual)
+esp -> esp : Control LED
+
+esp -> be : POST /api/device/log\n{light_value, lamp_status}
+be -> db : INSERT INTO sensor_logs
+db --> be : OK
+be --> esp : 201 Created
+
+' ==================== DASHBOARD REALTIME ====================
+== Dashboard Monitoring ==
+admin -> fe : View Dashboard
+fe -> be : GET /api/web/status
+be -> db : SELECT latest sensor_logs\nSELECT system_config
+db --> be : Data
+be --> fe : {latestSensorData, currentConfig}
+fe --> admin : Display Stats
+
+' ==================== UPDATE THRESHOLD ====================
+== Update Threshold ==
+admin -> fe : Input New Threshold Value
+fe -> be : PATCH /api/web/config\n{threshold: 2500}
+be -> db : UPDATE system_config SET threshold
+db --> be : OK
+be --> fe : Updated Config
+fe --> admin : Display Success
+
+note over esp
+  Next poll cycle (5s),
+  ESP32 fetches new threshold
+  and applies new logic
+end note
+
+esp -> be : GET /api/device/config
+be --> esp : {threshold: 2500, ...}
+esp -> esp : Apply New Threshold
+
+' ==================== MANUAL OVERRIDE ====================
+== Manual Override ==
+admin -> fe : Toggle Manual Mode ON
+fe -> be : PATCH /api/web/config\n{is_manual: true}
+be -> db : UPDATE system_config SET is_manual
+db --> be : OK
+be --> fe : Updated Config
+
+admin -> fe : Set Lamp ON
+fe -> be : PATCH /api/web/config\n{manual_state: true}
+be -> db : UPDATE system_config SET manual_state
+db --> be : OK
+be --> fe : Updated Config
+fe --> admin : Display Lamp ON
+
+note over esp
+  Next poll cycle (5s),
+  ESP32 fetches new config
+  and turns lamp ON (manual)
+end note
+
+esp -> be : GET /api/device/config
+be --> esp : {is_manual: true, manual_state: true}
+esp -> esp : digitalWrite(LED, HIGH)
+
+' ==================== USER MANAGEMENT ====================
+== User Management ==
+admin -> fe : Open User Management
+fe -> be : GET /api/users
+be -> db : SELECT * FROM users
+db --> be : Users list
+be --> fe : {users}
+fe --> admin : Display User List
+
+admin -> fe : Add New User
+fe -> be : POST /api/users\n{username, password, role}
+be -> db : INSERT INTO users
+db --> be : OK
+be --> fe : New User Created
+fe --> admin : Display Success
+
+admin -> fe : Update User
+fe -> be : PATCH /api/users/:id\n{username, password, role}
+be -> db : UPDATE users SET ...
+db --> be : OK
+be --> fe : User Updated
+fe --> admin : Display Success
+
+admin -> fe : Delete User
+fe -> be : DELETE /api/users/:id
+be -> db : DELETE FROM users WHERE id
+db --> be : OK
+be --> fe : User Deleted
+fe --> admin : Display Success
+
+' ==================== STATISTICS ====================
+== Real-time Statistics ==
+loop Every 5 seconds
+    fe -> be : GET /api/web/statistics?period=24h
+    be -> db : SELECT sensor_logs\nWHERE created_at >= 24h ago
+    db --> be : Logs array
+    be --> fe : {statistics, chartData}
+    fe --> admin : Update Charts
+end
+
+@enduml
