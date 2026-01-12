@@ -1,0 +1,49 @@
+@startuml
+title Flowchart User - Smart Light IoT System
+
+start
+
+:Akses Halaman Login;
+
+:Input Username & Password;
+
+if (Kredensial Valid?) then (Ya)
+    :Masuk ke Dashboard;
+    
+    repeat
+        :Pilih Menu;
+        
+        switch (Menu yang dipilih?)
+        case (Dashboard)
+            :Lihat Status Lampu;
+            :Lihat Data Sensor Real-time;
+        case (Sensor Logs)
+            :Lihat Riwayat Data Sensor;
+            :Filter berdasarkan Tanggal;
+        case (Statistics)
+            :Lihat Grafik Statistik;
+            :Lihat Real-time Chart;
+        case (Logout)
+            :Keluar dari Sistem;
+            stop
+        endswitch
+        
+    repeat while (Lanjut?) is (Ya)
+    
+else (Tidak)
+    :Tampilkan Pesan Error;
+    
+    if (Belum punya akun?) then (Ya)
+        :Register Akun Baru;
+        :Input Data Registrasi;
+        :Akun Dibuat;
+    else (Tidak)
+    endif
+    
+    :Kembali ke Login;
+    
+endif
+
+stop
+
+@enduml
