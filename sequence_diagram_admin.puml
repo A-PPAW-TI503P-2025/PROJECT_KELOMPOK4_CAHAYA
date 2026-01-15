@@ -10,7 +10,7 @@ skinparam responseMessageBelowArrow true
 actor "Admin" as admin #lightgreen
 participant "Frontend\n(Next.js)" as fe #lightyellow
 participant "Backend\n(Express.js)" as be #lightblue
-database "PostgreSQL\nDatabase" as db #white
+database "SQLite\nDatabase" as db #white
 participant "ESP32\nDevice" as esp #orange
 
 ' ==================== AUTHENTICATION FLOW ====================
