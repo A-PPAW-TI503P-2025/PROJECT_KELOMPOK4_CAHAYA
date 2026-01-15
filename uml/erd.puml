@@ -1,0 +1,60 @@
+@startuml erd
+
+title Smart Light IoT System - Entity Relationship Diagram
+
+skinparam linetype ortho
+
+entity "users" as users {
+    * id : INTEGER <<PK>>
+    --
+    * username : VARCHAR(50) <<UNIQUE>>
+    * password : VARCHAR(255)
+    * role : ENUM('admin', 'user')
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+entity "system_config" as config {
+    * id : INTEGER <<PK>>
+    --
+    * threshold : INTEGER
+    * is_manual : BOOLEAN
+    * manual_state : BOOLEAN
+    updated_by : INTEGER <<FK>>
+    * created_at : TIMESTAMP
+    * updated_at : TIMESTAMP
+}
+
+entity "sensor_logs" as logs {
+    * id : SERIAL <<PK>>
+    --
+    * light_value : INTEGER
+    * lamp_status : BOOLEAN
+    config_id : INTEGER <<FK>>
+    * created_at : TIMESTAMP
+}
+
+' Relationships
+users ||--o{ config : "updates"
+config ||--o{ logs : "generates"
+
+note bottom of users
+  Role:
+  - admin: Full CRUD access
+  - user: Read-only access
+end note
+
+note bottom of config
+  Default values:
+  - threshold: 2000
+  - is_manual: false
+  - manual_state: false
+end note
+
+note bottom of logs
+  Stores ESP32 sensor data:
+  - light_value: LDR reading
+  - lamp_status: LED ON/OFF
+end note
+
+@enduml
