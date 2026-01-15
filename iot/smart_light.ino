@@ -64,7 +64,7 @@ void loop() {
         } else {
           currentLampStatus = false; // Bright -> Light OFF
         }
-        Serial.printf("[AUTO] Light: %d < Threshold: %d -> Lamp: %s\n",
+        Serial.printf("[AUTO] Light: %d > Threshold: %d -> Lamp: %s\n",
                       lightValue, threshold, currentLampStatus ? "ON" : "OFF");
       } else {
         // MANUAL MODE
