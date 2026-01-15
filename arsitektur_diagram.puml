@@ -51,7 +51,7 @@ package "Backend (Express.js)" as backend #lightblue {
 }
 
 ' ==================== DATABASE LAYER ====================
-database "PostgreSQL" as db #orange {
+database "SQLite" as db #orange {
     [users]
     [system_config]
     [sensor_logs]
