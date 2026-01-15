@@ -59,7 +59,7 @@ void loop() {
       // 3. DETERMINE ACTUATOR STATE
       if (!manualMode) {
         // AUTOMATIC LOGIC
-        if (lightValue < threshold) {
+        if (lightValue > threshold) {
           currentLampStatus = true; // Dark -> Light ON
         } else {
           currentLampStatus = false; // Bright -> Light OFF

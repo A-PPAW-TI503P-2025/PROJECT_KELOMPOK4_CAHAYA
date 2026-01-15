@@ -78,7 +78,7 @@ export default function ConfigPage() {
                         Light Threshold (Lux)
                     </label>
                     <p className="text-xs text-slate-500 mb-3">
-                        If intensity drops below this value, the light will turn ON automatically (in Automatic mode).
+                        If intensity drops below this value, the light will turn OFF automatically (in Automatic mode).
                     </p>
                     <div className="flex gap-4 items-center">
                         <Input 
