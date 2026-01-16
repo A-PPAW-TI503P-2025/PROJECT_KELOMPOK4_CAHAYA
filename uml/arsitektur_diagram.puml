@@ -1,0 +1,115 @@
+@startuml component_diagram
+
+title Smart Light IoT System - Component/Architecture Diagram
+
+top to bottom direction
+skinparam linetype ortho
+
+skinparam component {
+    BackgroundColor #f8fafc
+    BorderColor #334155
+}
+
+skinparam package {
+    BackgroundColor #ffffff
+    BorderColor #94a3b8
+}
+
+' ==================== IOT LAYER (TOP) ====================
+package "IoT Device (ESP32)" as iot #lightyellow {
+    [LDR Sensor] as ldr
+    [LED/Relay] as led
+    [HTTP Client] as httpClient
+}
+
+' ==================== BACKEND LAYER ====================
+package "Backend (Express.js)" as backend #lightblue {
+    package "Routes" {
+        [Auth Routes] as authRoutes
+        [Web Routes] as webRoutes
+        [Device Routes] as deviceRoutes
+        [User Routes] as userRoutes
+    }
+    
+    package "Controllers" {
+        [Auth Controller] as authCtrl
+        [Web Controller] as webCtrl
+        [Device Controller] as deviceCtrl
+        [User Controller] as userCtrl
+    }
+    
+    package "Middleware" {
+        [JWT Auth] as jwtAuth
+        [Admin Auth] as adminAuth
+    }
+    
+    package "Models" {
+        [User Model] as userModel
+        [Config Model] as configModel
+        [Log Model] as logModel
+    }
+}
+
+' ==================== DATABASE LAYER ====================
+database "SQLite" as db #orange {
+    [users]
+    [system_config]
+    [sensor_logs]
+}
+
+' ==================== FRONTEND LAYER ====================
+package "Frontend (Next.js)" as frontend #lightgreen {
+    [Dashboard] as dashboard
+    [Logs Page] as logs
+    [Statistics] as stats
+    [User Management] as users
+    [Lamp Control] as config
+    [API Service] as apiService
+}
+
+' ==================== CLIENT LAYER (BOTTOM) ====================
+actor "Admin" as admin
+actor "User" as user
+
+' ==================== CONNECTIONS ====================
+
+' IoT to Backend
+ldr --> httpClient
+httpClient --> led
+httpClient --> deviceRoutes : HTTP
+
+' Routes to Controllers
+authRoutes --> authCtrl
+webRoutes --> webCtrl
+deviceRoutes --> deviceCtrl
+userRoutes --> userCtrl
+
+' Middleware
+authRoutes --> jwtAuth
+webRoutes --> jwtAuth
+userRoutes --> jwtAuth
+userRoutes --> adminAuth
+
+' Controllers to Models
+authCtrl --> userModel
+webCtrl --> configModel
+webCtrl --> logModel
+deviceCtrl --> configModel
+deviceCtrl --> logModel
+userCtrl --> userModel
+
+' Models to Database
+userModel --> db
+configModel --> db
+logModel --> db
+
+' Frontend to Backend
+apiService --> authRoutes
+apiService --> webRoutes
+apiService --> userRoutes
+
+' Client to Frontend
+admin --> dashboard
+user --> dashboard
+
+@enduml

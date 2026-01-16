@@ -1,0 +1,79 @@
+@startuml
+title Activity Diagram User - View Monitoring Data
+
+|User|
+start
+
+:Login ke Sistem;
+
+|System|
+:Validasi Kredensial;
+
+|Database|
+:Cek Data User;
+
+|System|
+if (Valid?) then (Ya)
+    |User|
+    :Akses Dashboard;
+    
+    |System|
+    :Request Data Sensor;
+    
+    |Database|
+    :Query Status Lampu;
+    :Query Data Sensor Terbaru;
+    
+    |System|
+    :Tampilkan Dashboard;
+    
+    |User|
+    :Melihat Dashboard;
+    :Pilih Menu;
+    
+    if (Menu?) then (Sensor Logs)
+        |System|
+        :Request Riwayat Sensor;
+        
+        |Database|
+        :Query Log Sensor;
+        
+        |System|
+        :Tampilkan Tabel Log;
+        
+        |User|
+        :Melihat Tabel Log;
+        
+    else (Statistics)
+        |System|
+        :Request Data Statistik;
+        
+        |Database|
+        :Query Data Agregasi;
+        
+        |System|
+        :Render Grafik Real-time;
+        
+        |User|
+        :Melihat Grafik;
+        
+    endif
+    
+    |User|
+    :Logout;
+    
+    |System|
+    :Hapus Session;
+    
+    |Database|
+    :Update Status Login;
+    
+else (Tidak)
+    |System|
+    :Tampilkan Error;
+    :Redirect ke Login;
+endif
+
+stop
+
+@enduml

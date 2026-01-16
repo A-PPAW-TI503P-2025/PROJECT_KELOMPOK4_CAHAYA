@@ -1,0 +1,70 @@
+@startuml class_diagram
+
+title Smart Light IoT System - Class Diagram
+
+' Models
+class User {
+    - id: Integer
+    - username: String
+    - password: String
+    - role: Enum(admin, user)
+    - createdAt: DateTime
+    - updatedAt: DateTime
+}
+
+class SystemConfig {
+    - id: Integer
+    - threshold: Integer
+    - manualMode: Boolean
+    - lampStatus: Boolean
+    - updatedBy: Integer
+    - createdAt: DateTime
+    - updatedAt: DateTime
+}
+
+class SensorLog {
+    - id: Integer
+    - lightValue: Integer
+    - lampStatus: Boolean
+    - configId: Integer
+    - createdAt: DateTime
+}
+
+' Controllers
+class AuthController {
+    + login()
+    + register()
+    + signup()
+    + getProfile()
+}
+
+class WebController {
+    + getDashboardStatus()
+    + getSensorLogs()
+    + updateConfig()
+    + getStatistics()
+}
+
+class DeviceController {
+    + getConfig()
+    + postSensorLog()
+}
+
+class UserController {
+    + getAllUsers()
+    + updateUser()
+    + deleteUser()
+}
+
+' Relationships
+User "1" -- "0..*" SystemConfig : updates
+SystemConfig "1" -- "0..*" SensorLog : generates
+
+AuthController ..> User
+WebController ..> SystemConfig
+WebController ..> SensorLog
+DeviceController ..> SystemConfig
+DeviceController ..> SensorLog
+UserController ..> User
+
+@enduml

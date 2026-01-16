@@ -1,0 +1,79 @@
+@startuml
+title Activity Diagram Admin - Manual Override
+
+|Admin|
+start
+
+:Login ke Sistem;
+
+|System|
+:Validasi Kredensial Admin;
+
+|Database|
+:Cek Data Admin;
+
+|System|
+if (Valid?) then (Ya)
+    |Admin|
+    :Akses Menu Lamp Control;
+    
+    |System|
+    :Request Status Lampu;
+    
+    |Database|
+    :Query system_config (is_manual, manual_state);
+    
+    |System|
+    :Tampilkan Status Mode;
+    
+    |Admin|
+    :Melihat Status Mode;
+    :Toggle Manual Mode (ON/OFF);
+    
+    |System|
+    :Proses Perubahan Mode;
+    
+    |Database|
+    :Update is_manual;
+    
+    |System|
+    if (is_manual = true?) then (Ya)
+        :Tampilkan Kontrol Lampu;
+        
+        |Admin|
+        :Pilih Status Lampu (ON/OFF);
+        
+        |System|
+        :Proses Perubahan Lampu;
+        
+        |Database|
+        :Update manual_state;
+        
+        |System|
+        :Tampilkan Sukses;
+        
+        |Admin|
+        :Melihat Konfirmasi;
+        
+    else (Tidak)
+        :Tampilkan Mode Auto Aktif;
+        
+        |Admin|
+        :Melihat Status Auto;
+    endif
+    
+    |Admin|
+    :Logout;
+    
+    |System|
+    :Hapus Session;
+    
+else (Tidak)
+    |System|
+    :Tampilkan Error Login;
+    :Redirect ke Login;
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,99 @@
+@startuml
+title Activity Diagram Admin - User Management (CRUD)
+
+|Admin|
+start
+
+:Login ke Sistem;
+
+|System|
+:Validasi Kredensial Admin;
+
+|Database|
+:Cek Data Admin;
+
+|System|
+if (Valid?) then (Ya)
+    |Admin|
+    :Akses Menu User Management;
+    
+    |System|
+    :Request Data Users;
+    
+    |Database|
+    :Query All Users;
+    
+    |System|
+    :Tampilkan Daftar User;
+    
+    |Admin|
+    :Melihat Daftar User;
+    :Pilih Aksi;
+    
+    if (Aksi?) then (Add User)
+        |Admin|
+        :Input Data User Baru;
+        
+        |System|
+        :Validasi Input;
+        
+        |Database|
+        :Insert Data User;
+        
+        |System|
+        :Tampilkan Sukses;
+        
+        |Admin|
+        :Melihat Konfirmasi;
+        
+    else if (Update User) then
+        |Admin|
+        :Pilih User yang Diedit;
+        :Input Data User Baru;
+        
+        |System|
+        :Validasi Input;
+        
+        |Database|
+        :Update Data User;
+        
+        |System|
+        :Tampilkan Sukses;
+        
+        |Admin|
+        :Melihat Konfirmasi;
+        
+    else (Delete User)
+        |Admin|
+        :Pilih User yang Dihapus;
+        :Konfirmasi Hapus;
+        
+        |System|
+        :Proses Penghapusan;
+        
+        |Database|
+        :Delete Data User;
+        
+        |System|
+        :Tampilkan Sukses;
+        
+        |Admin|
+        :Melihat Konfirmasi;
+        
+    endif
+    
+    |Admin|
+    :Logout;
+    
+    |System|
+    :Hapus Session;
+    
+else (Tidak)
+    |System|
+    :Tampilkan Error;
+    :Redirect ke Login;
+endif
+
+stop
+
+@enduml

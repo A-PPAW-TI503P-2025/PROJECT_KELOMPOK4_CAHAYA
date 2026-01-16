@@ -1,0 +1,156 @@
+@startuml flowchart_admin
+
+title Smart Light IoT System - Admin Flowchart
+
+skinparam activity {
+    BackgroundColor #f8fafc
+    BorderColor #334155
+    ArrowColor #4361ee
+    DiamondBackgroundColor #fef3c7
+    DiamondBorderColor #d97706
+}
+
+skinparam activityStart {
+    Color #10b981
+}
+
+skinparam activityEnd {
+    Color #ef4444
+}
+
+start
+
+:Buka Halaman Login;
+
+:Masukkan Username & Password;
+
+if (Kredensial Valid?) then (Ya)
+    if (Role = Admin?) then (Ya)
+        :Masuk ke Dashboard Admin;
+        
+        repeat
+            :Pilih Menu;
+            
+            switch (Menu yang Dipilih?)
+            case (Dashboard)
+                :Tampilkan Dashboard;
+                :Lihat Status Lampu Real-time;
+                :Lihat Nilai Sensor Cahaya;
+                :Lihat Konfigurasi Saat Ini;
+                
+            case (Sensor Logs)
+                :Tampilkan Halaman Logs;
+                :Lihat Daftar Log Sensor;
+                if (Ingin Filter Data?) then (Ya)
+                    :Pilih Filter (Tanggal/Pagination);
+                    :Tampilkan Data Terfilter;
+                else (Tidak)
+                endif
+                
+            case (Statistics)
+                :Tampilkan Halaman Statistik;
+                :Lihat Grafik Real-time;
+                :Lihat Statistik Lampu ON/OFF;
+                :Lihat Min/Max/Avg Nilai Cahaya;
+                
+            case (Pengaturan Threshold)
+                :Tampilkan Form Threshold;
+                :Masukkan Nilai Threshold Baru;
+                if (Nilai Valid?) then (Ya)
+                    :Simpan Threshold;
+                    :Tampilkan Notifikasi Sukses;
+                else (Tidak)
+                    :Tampilkan Pesan Error;
+                endif
+                
+            case (Mode Operasi)
+                :Tampilkan Toggle Mode;
+                if (Mode Saat Ini?) then (Auto)
+                    :Ubah ke Mode Manual;
+                else (Manual)
+                    :Ubah ke Mode Auto;
+                endif
+                :Simpan Perubahan Mode;
+                :Tampilkan Notifikasi Sukses;
+                
+            case (Kontrol Lampu Manual)
+                if (Mode = Manual?) then (Ya)
+                    :Tampilkan Toggle Lampu;
+                    if (Status Lampu Saat Ini?) then (ON)
+                        :Matikan Lampu;
+                    else (OFF)
+                        :Nyalakan Lampu;
+                    endif
+                    :Simpan Status Lampu;
+                    :Tampilkan Notifikasi Sukses;
+                else (Tidak)
+                    :Tampilkan Pesan "Aktifkan Mode Manual Terlebih Dahulu";
+                endif
+                
+            case (Kelola User)
+                :Tampilkan Halaman Manajemen User;
+                :Lihat Daftar Semua User;
+                
+                switch (Aksi User?)
+                case (Tambah User)
+                    :Tampilkan Form Tambah User;
+                    :Masukkan Username & Password;
+                    :Pilih Role (Admin/User);
+                    if (Data Valid?) then (Ya)
+                        if (Username Unik?) then (Ya)
+                            :Simpan User Baru;
+                            :Tampilkan Notifikasi Sukses;
+                        else (Tidak)
+                            :Tampilkan Error "Username Sudah Ada";
+                        endif
+                    else (Tidak)
+                        :Tampilkan Pesan Error Validasi;
+                    endif
+                    
+                case (Hapus User)
+                    :Pilih User yang Akan Dihapus;
+                    :Tampilkan Dialog Konfirmasi;
+                    if (Konfirmasi Hapus?) then (Ya)
+                        :Hapus User dari Database;
+                        :Tampilkan Notifikasi Sukses;
+                    else (Tidak)
+                        :Batalkan Penghapusan;
+                    endif
+                    
+                case (Update User)
+                    :Pilih User yang Akan Diedit;
+                    :Tampilkan Form Edit User;
+                    :Ubah Data (Username/Password/Role);
+                    if (Data Valid?) then (Ya)
+                        :Update User di Database;
+                        :Tampilkan Notifikasi Sukses;
+                    else (Tidak)
+                        :Tampilkan Pesan Error Validasi;
+                    endif
+                    
+                case (Kembali)
+                endswitch
+                
+            case (Logout)
+                :Hapus Session/Token;
+                :Redirect ke Halaman Login;
+                stop
+                
+            endswitch
+            
+        repeat while (Lanjutkan?) is (Ya)
+        
+    else (Tidak)
+        :Redirect ke Dashboard User;
+        note right: User biasa hanya bisa\nView Dashboard, Logs, Statistics
+        stop
+    endif
+else (Tidak)
+    :Tampilkan Pesan Error Login;
+    :Kembali ke Form Login;
+    stop
+endif
+
+stop
+
+@enduml

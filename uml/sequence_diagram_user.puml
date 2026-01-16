@@ -1,0 +1,65 @@
+@startuml sequence_diagram_user
+
+title Smart Light IoT System - Sequence Diagram (User)
+
+skinparam sequenceArrowThickness 2
+skinparam sequenceParticipant underline
+skinparam responseMessageBelowArrow true
+
+' ==================== PARTICIPANTS ====================
+actor "User" as user #lightblue
+participant "Frontend\n(Next.js)" as fe #lightyellow
+participant "Backend\n(Express.js)" as be #lightblue
+database "SQLite\nDatabase" as db #white
+
+' ==================== AUTHENTICATION FLOW ====================
+== Authentication ==
+user -> fe : Open Login Page
+fe -> be : POST /api/auth/login
+be -> db : SELECT user WHERE username
+db --> be : User data (role: user)
+be --> fe : JWT Token
+fe --> user : Redirect to Dashboard
+
+' ==================== DASHBOARD VIEW ====================
+== View Dashboard ==
+user -> fe : View Dashboard
+fe -> be : GET /api/web/status
+be -> db : SELECT latest sensor_logs\nSELECT system_config
+db --> be : Data
+be --> fe : {latestSensorData, currentConfig}
+fe --> user : Display Dashboard\n(Status Lampu, Sensor Value)
+
+' ==================== SENSOR LOGS ====================
+== View Sensor Logs ==
+user -> fe : Open Sensor Logs
+fe -> be : GET /api/web/logs?limit=20
+be -> db : SELECT sensor_logs\nORDER BY created_at DESC
+db --> be : Logs array
+be --> fe : {logs}
+fe --> user : Display Log Table
+
+' ==================== STATISTICS ====================
+== View Statistics ==
+user -> fe : Open Statistics
+fe -> be : GET /api/web/statistics?period=24h
+be -> db : SELECT sensor_logs\nWHERE created_at >= 24h ago
+db --> be : Aggregated data
+be --> fe : {statistics, chartData}
+fe --> user : Display Charts
+
+loop Every 5 seconds (Real-time)
+    fe -> be : GET /api/web/statistics
+    be -> db : Query latest data
+    db --> be : Data
+    be --> fe : Updated stats
+    fe --> user : Update Charts
+end
+
+' ==================== LOGOUT ====================
+== Logout ==
+user -> fe : Click Logout
+fe -> fe : Clear JWT Token
+fe --> user : Redirect to Login
+
+@enduml

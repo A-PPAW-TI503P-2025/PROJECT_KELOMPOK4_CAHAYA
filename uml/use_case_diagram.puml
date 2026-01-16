@@ -1,0 +1,68 @@
+@startuml use_case_diagram
+
+title Smart Light IoT System - Use Case Diagram
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+' Actors
+actor "User" as user #lightblue
+actor "Admin" as admin #lightgreen  
+actor "ESP32 Device" as device #lightyellow
+
+admin -|> user
+
+' System
+rectangle "Smart Light IoT System" {
+    
+    package "Authentication" {
+        usecase "Login" as UC_Login
+        usecase "Logout" as UC_Logout
+        usecase "Register" as UC_Register
+    }
+    
+    package "Monitoring" {
+        usecase "View Dashboard" as UC_Dashboard
+        usecase "View Sensor Logs" as UC_Logs
+        usecase "View Statistics" as UC_Stats
+    }
+    
+    package "Configuration" <<Admin Only>> {
+        usecase "Set Light Threshold" as UC_Threshold
+        usecase "Toggle Operating Mode" as UC_Mode
+        usecase "Manual Lamp Control" as UC_ManualLamp
+    }
+    
+    package "User Management" <<Admin Only>> {
+        usecase "View All Users" as UC_ViewUsers
+        usecase "Add New User" as UC_AddUser
+        usecase "Delete User" as UC_DeleteUser
+    }
+    
+    package "Device Operations" {
+        usecase "Fetch Configuration" as UC_FetchConfig
+        usecase "Send Sensor Data" as UC_SendData
+        usecase "Control Lamp" as UC_ControlLamp
+    }
+}
+
+' Relationships
+user --> UC_Login
+user --> UC_Logout
+user --> UC_Register
+user --> UC_Dashboard
+user --> UC_Logs
+user --> UC_Stats
+
+admin --> UC_Threshold
+admin --> UC_Mode
+admin --> UC_ManualLamp
+admin --> UC_ViewUsers
+admin --> UC_AddUser
+admin --> UC_DeleteUser
+
+device --> UC_FetchConfig
+device --> UC_SendData
+device --> UC_ControlLamp
+
+@enduml
