@@ -107,13 +107,6 @@ db --> be : OK
 be --> fe : New User Created
 fe --> admin : Display Success
 
-admin -> fe : Update User
-fe -> be : PATCH /api/users/:id\n{username, password, role}
-be -> db : UPDATE users SET ...
-db --> be : OK
-be --> fe : User Updated
-fe --> admin : Display Success
-
 admin -> fe : Delete User
 fe -> be : DELETE /api/users/:id
 be -> db : DELETE FROM users WHERE id
