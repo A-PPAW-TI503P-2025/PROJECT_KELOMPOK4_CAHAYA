@@ -53,38 +53,30 @@ if (Kredensial Valid?) then (Ya)
                 :Lihat Statistik Lampu ON/OFF;
                 :Lihat Min/Max/Avg Nilai Cahaya;
                 
-            case (Pengaturan Threshold)
-                :Tampilkan Form Threshold;
-                :Masukkan Nilai Threshold Baru;
-                if (Nilai Valid?) then (Ya)
-                    :Simpan Threshold;
-                    :Tampilkan Notifikasi Sukses;
+            case (System Configuration)
+                :Tampilkan Halaman System Configuration;
+                :Lihat Konfigurasi Saat Ini;
+                
+                :Masukkan/Ubah Light Threshold (Lux);
+                note right: Threshold untuk mode Automatic\n(Jika cahaya < threshold, lampu ON)
+                
+                :Pilih Operating Mode;
+                
+                if (Mode yang Dipilih?) then (Automatic)
+                    :Lampu dikontrol otomatis\nberdasarkan sensor cahaya;
+                    :Manual Lamp Control Disabled;
+                else (Manual)
+                    :Toggle Manual Lamp Control (ON/OFF);
+                    note right: Admin mengontrol\nlampu secara langsung
+                endif
+                
+                :Klik Save Changes;
+                
+                if (Data Valid?) then (Ya)
+                    :Simpan Konfigurasi ke Database;
+                    :Tampilkan "Configuration saved successfully!";
                 else (Tidak)
                     :Tampilkan Pesan Error;
-                endif
-                
-            case (Mode Operasi)
-                :Tampilkan Toggle Mode;
-                if (Mode Saat Ini?) then (Auto)
-                    :Ubah ke Mode Manual;
-                else (Manual)
-                    :Ubah ke Mode Auto;
-                endif
-                :Simpan Perubahan Mode;
-                :Tampilkan Notifikasi Sukses;
-                
-            case (Kontrol Lampu Manual)
-                if (Mode = Manual?) then (Ya)
-                    :Tampilkan Toggle Lampu;
-                    if (Status Lampu Saat Ini?) then (ON)
-                        :Matikan Lampu;
-                    else (OFF)
-                        :Nyalakan Lampu;
-                    endif
-                    :Simpan Status Lampu;
-                    :Tampilkan Notifikasi Sukses;
-                else (Tidak)
-                    :Tampilkan Pesan "Aktifkan Mode Manual Terlebih Dahulu";
                 endif
                 
             case (Kelola User)
@@ -115,17 +107,6 @@ if (Kredensial Valid?) then (Ya)
                         :Tampilkan Notifikasi Sukses;
                     else (Tidak)
                         :Batalkan Penghapusan;
-                    endif
-                    
-                case (Update User)
-                    :Pilih User yang Akan Diedit;
-                    :Tampilkan Form Edit User;
-                    :Ubah Data (Username/Password/Role);
-                    if (Data Valid?) then (Ya)
-                        :Update User di Database;
-                        :Tampilkan Notifikasi Sukses;
-                    else (Tidak)
-                        :Tampilkan Pesan Error Validasi;
                     endif
                     
                 case (Kembali)
