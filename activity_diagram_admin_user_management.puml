@@ -46,23 +46,6 @@ if (Valid?) then (Ya)
         |Admin|
         :Melihat Konfirmasi;
         
-    else if (Update User) then
-        |Admin|
-        :Pilih User yang Diedit;
-        :Input Data User Baru;
-        
-        |System|
-        :Validasi Input;
-        
-        |Database|
-        :Update Data User;
-        
-        |System|
-        :Tampilkan Sukses;
-        
-        |Admin|
-        :Melihat Konfirmasi;
-        
     else (Delete User)
         |Admin|
         :Pilih User yang Dihapus;
