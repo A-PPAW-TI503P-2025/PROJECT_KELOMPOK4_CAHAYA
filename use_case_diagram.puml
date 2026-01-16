@@ -24,7 +24,6 @@ rectangle "Smart Light IoT System" {
   
   ' Admin User Management
   usecase "Add New User" as UC_AddUser
-  usecase "Update User" as UC_UpdateUser
   usecase "Delete User" as UC_DeleteUser
   
   ' Admin Lamp Control
@@ -52,7 +51,6 @@ rectangle "Smart Light IoT System" {
 
 ' Admin connections - ordered
 admin --> UC_AddUser
-admin --> UC_UpdateUser
 admin --> UC_DeleteUser
 admin --> UC_Threshold
 admin --> UC_Mode
@@ -77,7 +75,6 @@ UC_Logout ..> UC_Login : <<extend>>
 
 ' Include relationships to Login - ordered
 UC_AddUser ..> UC_Login : <<include>>
-UC_UpdateUser ..> UC_Login : <<include>>
 UC_DeleteUser ..> UC_Login : <<include>>
 UC_Threshold ..> UC_Login : <<include>>
 UC_Mode ..> UC_Login : <<include>>
